@@ -1,44 +1,28 @@
-function login() {
-  const enteredPhone = document.getElementById("num").value;
-  const enteredPass = document.getElementById("pass").value;
-  const result = document.getElementById("res");
-  // below is database
-  phone = 1234;
-  pass = "test";
-  checkPhone(enteredPhone)
-    .then((isnum) => {
-      if (isnum) {
-        checkPass(enteredPass)
-          .then((ispass) => {
-            if (ispass) {
-              alert("Login success");
-            }
-          })
-          .catch(() => {
-            alert("Invalid  pass");
-          });
-      }
-    })
-    .catch(() => {
-      alert("Invalid  user");
-    });
-}
-function checkPhone(n) {
-  return new Promise((resolve, reject) => {
-    if (n == phone) {
-      resolve(true);
-    } else {
-      reject(false);
-    }
-  });
-}
+fetch("https://dummyjson.com/products")
+  .then((res) => res.json())
+  .then((res) => {
+    const products = res.products;
+    const container = document.getElementById("box");
 
-function checkPass(p) {
-  return new Promise((resolve, reject) => {
-    if (p == pass) {
-      resolve(true);
-    } else {
-      reject(false);
-    }
+    products.forEach(product => {
+      container.innerHTML += `
+        <div class="product-box" onclick="viewProductDetails(${product.id})">
+          <img src="${product.images[0]}" alt="${product.title}">
+          <h3>${product.title}</h3>
+          <p><strong>Brand:</strong> ${product.brand}</p>
+          <p><strong>Category:</strong> ${product.category}</p>
+          <p><strong>Price:</strong> $${product.price}</p>
+        </div>
+      `;
+
+      // Store each product in localStorage
+      localStorage.setItem(`product-${product.id}`, JSON.stringify(product));
+    });
+  })
+  .catch(err => {
+    console.error("Error fetching products:", err);
   });
+
+function viewProductDetails(productId) {
+  window.location.href = `details.html?id=${productId}`;
 }
